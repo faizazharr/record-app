@@ -1,5 +1,6 @@
 package com.example.pos.feature.uang_masuk
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -15,11 +16,13 @@ import javax.inject.Inject
 class DaftarUangMasukViewModel @Inject constructor(
     private val recordRepository: RecordRepository
 ) : ViewModel() {
-    private val mutableRecord = MutableLiveData<List<Record>>()
     private val startDate = MutableLiveData<String>()
     private val endDate = MutableLiveData<String>()
 
-    val records: MutableLiveData<List<Record>> = mutableRecord
+    init {
+        startDate.value = ""
+        endDate.value = ""
+    }
 
     fun setStartDate(startDate: String) {
         this.startDate.value = startDate
@@ -29,9 +32,11 @@ class DaftarUangMasukViewModel @Inject constructor(
         this.endDate.value = endDate
     }
 
-    fun loadRecords() {
-        val startDate = this.startDate.value
-        val endDate = this.endDate.value
+    fun loadRecords(): LiveData<List<Record>> {
+        val mutableRecord = MutableLiveData<List<Record>>()
+        val startDate = startDate.value
+        val endDate = endDate.value
+        mutableRecord.value = emptyList()
         viewModelScope.launch {
             if (!startDate.isNullOrEmpty() && !endDate.isNullOrEmpty()) {
                 if (startDate.parseDate() < endDate.parseDate()) {
@@ -40,11 +45,12 @@ class DaftarUangMasukViewModel @Inject constructor(
                             from = startDate.toLong(),
                             to = endDate.toLong()
                         )
-                            .asLiveData()
+                            .asLiveData(viewModelScope.coroutineContext)
                     mutableRecord.value = records.value
                 }
             }
         }
+        return mutableRecord
     }
 
 

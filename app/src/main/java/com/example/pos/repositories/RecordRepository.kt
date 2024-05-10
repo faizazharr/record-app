@@ -1,8 +1,11 @@
 package com.example.pos.repositories
 
+import androidx.annotation.WorkerThread
 import com.example.pos.data.model.local.Record
 import com.example.pos.db.RecordsDao
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
@@ -18,19 +21,21 @@ class RecordRepository @Inject constructor(
         recordsDao.deleteRecordById(id)
     }
 
+    @WorkerThread
     suspend fun getRecords(from: Long, to: Long) = flow {
         val data = recordsDao.getListRecord(from, to)
         emit(data)
     }.onStart {
         emit(emptyList())
-    }
+    }.flowOn(Dispatchers.IO)
 
+    @WorkerThread
     suspend fun getRecordById(id: Int) = flow {
         val data = recordsDao.getRecordById(id)
         emit(data)
     }.onStart {
         emit(null)
-    }
+    }.flowOn(Dispatchers.IO)
 
     suspend fun updateRecord(record: Record) {
         recordsDao.updateRecord(record)

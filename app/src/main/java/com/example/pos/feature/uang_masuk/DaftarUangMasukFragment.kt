@@ -25,7 +25,7 @@ class DaftarUangMasukFragment : Fragment() {
     }
 
     private fun setupRecordModel() {
-        viewModel.records.observe(viewLifecycleOwner) { records ->
+        viewModel.loadRecords().observe(viewLifecycleOwner) { records ->
             initUi(records)
         }
     }
