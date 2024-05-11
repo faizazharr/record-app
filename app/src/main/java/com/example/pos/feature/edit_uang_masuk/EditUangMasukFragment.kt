@@ -1,13 +1,20 @@
 package com.example.pos.feature.edit_uang_masuk
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.pos.data.model.local.Record
 import com.example.pos.databinding.FragmentEditUangMasukBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +22,18 @@ import kotlinx.coroutines.launch
 class EditUangMasukFragment : Fragment() {
     private val viewModel: EditUangMasukViewModel by activityViewModels()
     private lateinit var binding: FragmentEditUangMasukBinding
-
+    private val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_MEDIA_IMAGES,
+        )
+    } else {
+        arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,4 +85,46 @@ class EditUangMasukFragment : Fragment() {
             }
         }
     }
+
+
+    private fun checkPermissionGallery() {
+        when {
+            hasPermissions(requireContext(), permission) -> {
+            }
+
+            showPermissionRationale(permission)
+            -> {
+                Snackbar.make(binding.root, "Permission Denied", Snackbar.LENGTH_SHORT)
+            }
+
+            else -> {
+                requestMultiplePermissions.launch(
+                    permission
+                )
+            }
+        }
+    }
+
+    private val requestMultiplePermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions.entries.all {
+            it.value
+        }
+        if (granted) {
+//            imageChooser()
+        } else {
+            Snackbar.make(binding.root, "Permission Denied", Snackbar.LENGTH_SHORT)
+        }
+    }
+
+    private fun hasPermissions(context: Context, permissions: Array<String>): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
+
+    private fun showPermissionRationale(permissions: Array<String>): Boolean =
+        permissions.all {
+            shouldShowRequestPermissionRationale(it)
+        }
 }
