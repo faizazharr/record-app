@@ -10,6 +10,7 @@ import com.example.pos.repositories.RecordRepository
 import com.example.pos.util.currentDate
 import com.example.pos.util.parseDate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,5 +45,10 @@ class DaftarUangMasukViewModel @Inject constructor(
         }
 
         return null
+    }
+    fun deleteRecords(id: Int) {
+        viewModelScope.launch {
+            recordRepository.deleteRecord(id)
+        }
     }
 }

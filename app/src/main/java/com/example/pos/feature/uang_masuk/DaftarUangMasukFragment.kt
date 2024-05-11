@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -31,7 +32,14 @@ class DaftarUangMasukFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDaftarUangMasukBinding.inflate(inflater, container, false)
-        adapter = DaftarUangAdapter(null)
+        adapter = DaftarUangAdapter(null) { record, isEdit ->
+            if (isEdit) {
+                navigateEditUang(record.id)
+            } else {
+                viewModel.deleteRecords(record.id)
+                loadAllRecords()
+            }
+        }
         initUi()
         return binding.root
     }
@@ -64,6 +72,7 @@ class DaftarUangMasukFragment : Fragment() {
             }
         }
     }
+
     private fun loadAllRecords() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.loadRecords()?.observe(viewLifecycleOwner) { records ->
@@ -103,11 +112,19 @@ class DaftarUangMasukFragment : Fragment() {
         dialog.show(childFragmentManager, "DATE_PICKER")
     }
 
-    // kalau mau navigate buat input uang panggil ini aja
     private fun navigateInputUang() {
         NavGraph.navigateFragment(
             binding.root,
             R.id.action_daftarUangMasukFragment_to_inputUangMasukFragment
+        )
+    }
+
+    private fun navigateEditUang(id: Int) {
+        val bundle = bundleOf("id" to id)
+        NavGraph.navigateFragment(
+            binding.root,
+            R.id.action_daftarUangMasukFragment_to_editUangMasukFragment,
+            bundle = bundle
         )
     }
 

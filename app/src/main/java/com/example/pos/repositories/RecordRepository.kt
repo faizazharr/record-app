@@ -24,12 +24,11 @@ class RecordRepository @Inject constructor(
     @WorkerThread
     fun getRecords(from: Long, to: Long) = flow {
         val data = recordsDao.getListRecord(from, to)
-//        val data = recordsDao.getAllListRecord()
         emit(data)
     }.flowOn(Dispatchers.IO)
 
     @WorkerThread
-    suspend fun getRecordById(id: Int) = flow {
+    fun getRecordById(id: Int) = flow {
         val data = recordsDao.getRecordById(id)
         emit(data)
     }.onStart {
