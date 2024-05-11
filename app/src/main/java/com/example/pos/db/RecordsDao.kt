@@ -15,7 +15,7 @@ interface RecordsDao {
     @Query("DELETE FROM Record WHERE id == :id")
     suspend fun deleteRecordById(id: Int)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecords(record: Record)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -23,6 +23,9 @@ interface RecordsDao {
 
     @Query("SELECT * FROM Record WHERE date BETWEEN :from AND :to")
     suspend fun getListRecord(from: Long, to: Long): List<Record>?
+
+    @Query("SELECT * FROM Record")
+    suspend fun getAllListRecord(): List<Record>?
 
     @Query("SELECT * FROM Record WHERE id == :id")
     suspend fun getRecordById(id: Int): List<Record>?

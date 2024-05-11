@@ -1,5 +1,6 @@
 package com.example.pos.feature.input_uang_masuk
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,12 +39,14 @@ class InputUangMasukViewModel @Inject constructor(
             type = type
         )
         if (validationForm()) {
+            Log.v("Test", "validate: True")
             mutableIsValidated.value = true
             viewModelScope.launch(Dispatchers.IO) {
                 mutableRecord.value?.let { recordRepository.createRecord(it) }
             }
 
         } else {
+            Log.v("Test", "validate: False")
             mutableIsValidated.value = false
         }
     }
