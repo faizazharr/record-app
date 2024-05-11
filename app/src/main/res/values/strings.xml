@@ -8,4 +8,5 @@
     <string name="label_hint_note">Keterangan</string>
     <string name="label_hint_total">Jumlah</string>
     <string name="label_save">Save</string>
+    <string name="text_from_to">Dari %1$s! ke %2$s</string>
 </resources>

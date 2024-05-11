@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pos.data.model.local.Record
 import com.example.pos.repositories.RecordRepository
+import com.example.pos.util.currentDate
 import com.example.pos.util.parseDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,12 +17,12 @@ import javax.inject.Inject
 class DaftarUangMasukViewModel @Inject constructor(
     private val recordRepository: RecordRepository
 ) : ViewModel() {
-    private val startDate = MutableLiveData<String>()
-    private val endDate = MutableLiveData<String>()
+    val startDate = MutableLiveData<String>()
+    val endDate = MutableLiveData<String>()
 
     init {
-        startDate.value = ""
-        endDate.value = ""
+        startDate.value = currentDate()
+        endDate.value = currentDate()
     }
 
     fun setStartDate(startDate: String) {
@@ -42,8 +43,8 @@ class DaftarUangMasukViewModel @Inject constructor(
                 if (startDate.parseDate() < endDate.parseDate()) {
                     val records =
                         recordRepository.getRecords(
-                            from = startDate.toLong(),
-                            to = endDate.toLong()
+                            from = startDate.parseDate(),
+                            to = endDate.parseDate()
                         )
                             .asLiveData(viewModelScope.coroutineContext)
                     mutableRecord.value = records.value
