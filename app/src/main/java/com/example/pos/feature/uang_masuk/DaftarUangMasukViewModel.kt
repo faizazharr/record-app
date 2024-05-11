@@ -10,7 +10,7 @@ import com.example.pos.repositories.RecordRepository
 import com.example.pos.util.currentDate
 import com.example.pos.util.parseDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import timber.log.Timber
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +30,6 @@ class DaftarUangMasukViewModel @Inject constructor(
     }
 
     fun setEndDate(endDate: String) {
-        Timber.tag("vm").d("endDate: %s", endDate)
         this.endDate.value = endDate
     }
 
@@ -39,10 +38,29 @@ class DaftarUangMasukViewModel @Inject constructor(
         val endDate = endDate.value
 
         if (!startDate.isNullOrEmpty() && !endDate.isNullOrEmpty()) {
-            return recordRepository.getRecords(startDate.parseDate(), endDate.parseDate())
+            val millisStart = convertStart(startDate.parseDate())
+            val millisEnd = convertEnd(endDate.parseDate())
+            return recordRepository.getRecords(millisStart, millisEnd)
                 .asLiveData(viewModelScope.coroutineContext)
         }
 
         return null
+    }
+    private fun convertStart(milliSecond: Long) : Long{
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliSecond
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        return calendar.timeInMillis
+    }
+
+    private fun convertEnd(milliSecond: Long) : Long{
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliSecond
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        return calendar.timeInMillis
     }
 }
