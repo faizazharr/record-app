@@ -45,7 +45,8 @@ class DaftarUangMasukFragment : Fragment() {
         return binding.root
     }
 
-    init {
+    override fun onResume() {
+        super.onResume()
         loadAllRecords()
     }
 
