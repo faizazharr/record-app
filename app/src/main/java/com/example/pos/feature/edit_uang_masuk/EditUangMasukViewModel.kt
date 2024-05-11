@@ -27,7 +27,9 @@ class EditUangMasukViewModel @Inject constructor(
         to: String,
         total: String,
         note: String,
-        type: String
+        type: String,
+        date: Long?,
+        imageUri: String
     ) {
         mutableRecord.value = mutableRecord.value?.let {
             Record(
@@ -36,7 +38,9 @@ class EditUangMasukViewModel @Inject constructor(
                 to = to,
                 total = total,
                 note = note,
-                type = type
+                type = type,
+                date = date,
+                imageUri = imageUri
             )
         }
         if (validationForm()) {
