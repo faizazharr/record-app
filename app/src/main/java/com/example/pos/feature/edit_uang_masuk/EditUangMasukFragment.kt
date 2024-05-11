@@ -1,27 +1,27 @@
 package com.example.pos.feature.edit_uang_masuk
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.pos.data.model.local.Record
@@ -53,6 +53,7 @@ class EditUangMasukFragment : Fragment() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,7 +68,7 @@ class EditUangMasukFragment : Fragment() {
     private fun initUi() {
         val id = arguments?.getInt("id")
         viewModel.isValidated.observe(viewLifecycleOwner) { isvalidated ->
-            if(!isvalidated){
+            if (!isvalidated) {
 //                show message error on fragment screen
             }
         }
@@ -89,7 +90,7 @@ class EditUangMasukFragment : Fragment() {
             tietNote.setText(records?.note)
             tietType.setText(records?.type)
             currentDate = records?.date
-            if(!records?.imageUri.isNullOrEmpty())
+            if (!records?.imageUri.isNullOrEmpty())
                 setImageView(records?.imageUri?.toUri())
         }
     }
@@ -108,11 +109,11 @@ class EditUangMasukFragment : Fragment() {
                 )
             }
             cvImage.setOnClickListener {
-                if(imageUri.isEmpty())
-                    showSelectDialog()
+                if (imageUri.isEmpty())
+                    checkPermissionGallery()
             }
             btnImgEdit.setOnClickListener {
-                showSelectDialog()
+                checkPermissionGallery()
             }
             btnImgDelete.setOnClickListener {
                 imageUri = ""
@@ -130,7 +131,7 @@ class EditUangMasukFragment : Fragment() {
 
         dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        with(dialogView){
+        with(dialogView) {
             ivCamera.setOnClickListener {
 
             }
@@ -144,7 +145,7 @@ class EditUangMasukFragment : Fragment() {
     }
 
     private fun dismissDialog() {
-        if(dialog!!.isShowing)
+        if (dialog!!.isShowing)
             dialog!!.dismiss()
     }
 
@@ -173,9 +174,10 @@ class EditUangMasukFragment : Fragment() {
             }
         }
     }
-    private fun setImageView(uri : Uri?) {
+
+    private fun setImageView(uri: Uri?) {
         var selectedImageBitmap: Bitmap? = null
-        if(uri != null) {
+        if (uri != null) {
             try {
                 selectedImageBitmap = when {
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.P -> {
@@ -198,7 +200,7 @@ class EditUangMasukFragment : Fragment() {
             }
         }
 
-        if(selectedImageBitmap!=null) {
+        if (selectedImageBitmap != null) {
             imageUri = uri.toString()
             binding.apply {
                 ivPhoto.setImageBitmap(selectedImageBitmap)
@@ -214,6 +216,7 @@ class EditUangMasukFragment : Fragment() {
     private fun checkPermissionGallery() {
         when {
             hasPermissions(requireContext(), permission) -> {
+                showSelectDialog()
             }
 
             showPermissionRationale(permission)
@@ -236,7 +239,7 @@ class EditUangMasukFragment : Fragment() {
             it.value
         }
         if (granted) {
-//            imageChooser()
+            showSelectDialog()
         } else {
             Snackbar.make(binding.root, "Permission Denied", Snackbar.LENGTH_SHORT)
         }
