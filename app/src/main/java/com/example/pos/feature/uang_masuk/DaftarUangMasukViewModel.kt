@@ -10,6 +10,7 @@ import com.example.pos.repositories.RecordRepository
 import com.example.pos.util.currentDate
 import com.example.pos.util.parseDate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -62,5 +63,10 @@ class DaftarUangMasukViewModel @Inject constructor(
         calendar.set(Calendar.MINUTE, 59)
         calendar.set(Calendar.SECOND, 59)
         return calendar.timeInMillis
+    }
+    fun deleteRecords(id: Int) {
+        viewModelScope.launch {
+            recordRepository.deleteRecord(id)
+        }
     }
 }
