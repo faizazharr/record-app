@@ -1,6 +1,9 @@
 package com.example.pos.feature.edit_uang_masuk
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ImageDecoder
@@ -18,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -25,6 +29,7 @@ import com.example.pos.data.model.local.Record
 import com.example.pos.databinding.DialogSelectResourceBinding
 import com.example.pos.databinding.FragmentEditUangMasukBinding
 import com.example.pos.util.toUri
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,6 +41,19 @@ class EditUangMasukFragment : Fragment() {
     private var dialog: AlertDialog? = null
     private var imageUri: String = ""
     private var currentDate: Long? = null
+
+    private val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_MEDIA_IMAGES,
+        )
+    } else {
+        arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +69,7 @@ class EditUangMasukFragment : Fragment() {
     private fun initUi() {
         val id = arguments?.getInt("id")
         viewModel.isValidated.observe(viewLifecycleOwner) { isvalidated ->
-            if(!isvalidated){
+            if (!isvalidated) {
 //                show message error on fragment screen
             }
         }
@@ -73,7 +91,7 @@ class EditUangMasukFragment : Fragment() {
             tietNote.setText(records?.note)
             tietType.setText(records?.type)
             currentDate = records?.date
-            if(!records?.imageUri.isNullOrEmpty())
+            if (!records?.imageUri.isNullOrEmpty())
                 setImageView(records?.imageUri?.toUri())
         }
     }
@@ -93,11 +111,11 @@ class EditUangMasukFragment : Fragment() {
                 findNavController().navigateUp()
             }
             cvImage.setOnClickListener {
-                if(imageUri.isEmpty())
-                    showSelectDialog()
+                if (imageUri.isEmpty())
+                    checkPermissionGallery()
             }
             btnImgEdit.setOnClickListener {
-                showSelectDialog()
+                checkPermissionGallery()
             }
             btnImgDelete.setOnClickListener {
                 imageUri = ""
@@ -115,7 +133,7 @@ class EditUangMasukFragment : Fragment() {
 
         dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        with(dialogView){
+        with(dialogView) {
             ivCamera.setOnClickListener {
 
             }
@@ -129,7 +147,7 @@ class EditUangMasukFragment : Fragment() {
     }
 
     private fun dismissDialog() {
-        if(dialog!!.isShowing)
+        if (dialog!!.isShowing)
             dialog!!.dismiss()
     }
 
@@ -158,9 +176,10 @@ class EditUangMasukFragment : Fragment() {
             }
         }
     }
-    private fun setImageView(uri : Uri?) {
+
+    private fun setImageView(uri: Uri?) {
         var selectedImageBitmap: Bitmap? = null
-        if(uri != null) {
+        if (uri != null) {
             try {
                 selectedImageBitmap = when {
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.P -> {
@@ -183,7 +202,7 @@ class EditUangMasukFragment : Fragment() {
             }
         }
 
-        if(selectedImageBitmap!=null) {
+        if (selectedImageBitmap != null) {
             imageUri = uri.toString()
             binding.apply {
                 ivPhoto.setImageBitmap(selectedImageBitmap)
@@ -194,4 +213,47 @@ class EditUangMasukFragment : Fragment() {
                 .show()
         }
     }
+
+
+    private fun checkPermissionGallery() {
+        when {
+            hasPermissions(requireContext(), permission) -> {
+                showSelectDialog()
+            }
+
+            showPermissionRationale(permission)
+            -> {
+                Snackbar.make(binding.root, "Permission Denied", Snackbar.LENGTH_SHORT)
+            }
+
+            else -> {
+                requestMultiplePermissions.launch(
+                    permission
+                )
+            }
+        }
+    }
+
+    private val requestMultiplePermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions.entries.all {
+            it.value
+        }
+        if (granted) {
+            showSelectDialog()
+        } else {
+            Snackbar.make(binding.root, "Permission Denied", Snackbar.LENGTH_SHORT)
+        }
+    }
+
+    private fun hasPermissions(context: Context, permissions: Array<String>): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
+
+    private fun showPermissionRationale(permissions: Array<String>): Boolean =
+        permissions.all {
+            shouldShowRequestPermissionRationale(it)
+        }
 }
