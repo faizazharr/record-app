@@ -75,12 +75,12 @@ class DaftarUangMasukFragment : Fragment() {
                     date = currentDate().parseDate()
                 )
             )
-            if (!records2.isNullOrEmpty()) {
+            if (!records.isNullOrEmpty()) {
                 tvEmptyRecord.visibility = View.GONE 
             } else {
                 tvEmptyRecord.visibility = View.VISIBLE
             }
-            adapter.setRecords(records2)
+            adapter.setRecords(records)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.pos.feature.uang_masuk
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,13 +41,14 @@ class DaftarUangMasukViewModel @Inject constructor(
         mutableRecord.value = emptyList()
         viewModelScope.launch {
             if (!startDate.isNullOrEmpty() && !endDate.isNullOrEmpty()) {
-                if (startDate.parseDate() < endDate.parseDate()) {
+                if (startDate.parseDate() <= endDate.parseDate()) {
                     val records =
                         recordRepository.getRecords(
                             from = startDate.parseDate(),
                             to = endDate.parseDate()
                         )
                             .asLiveData(viewModelScope.coroutineContext)
+                    Log.d("vm", "records: ${records.value}")
                     mutableRecord.value = records.value
                 }
             }
