@@ -1,6 +1,5 @@
 package com.example.pos.feature.uang_masuk
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +10,7 @@ import com.example.pos.repositories.RecordRepository
 import com.example.pos.util.currentDate
 import com.example.pos.util.parseDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,30 +30,19 @@ class DaftarUangMasukViewModel @Inject constructor(
     }
 
     fun setEndDate(endDate: String) {
+        Timber.tag("vm").d("endDate: %s", endDate)
         this.endDate.value = endDate
     }
 
-    fun loadRecords(): LiveData<List<Record>> {
-        val mutableRecord = MutableLiveData<List<Record>>()
+    fun loadRecords(): LiveData<List<Record>?>? {
         val startDate = startDate.value
         val endDate = endDate.value
-        mutableRecord.value = emptyList()
-        viewModelScope.launch {
-            if (!startDate.isNullOrEmpty() && !endDate.isNullOrEmpty()) {
-                if (startDate.parseDate() <= endDate.parseDate()) {
-                    val records =
-                        recordRepository.getRecords(
-                            from = startDate.parseDate(),
-                            to = endDate.parseDate()
-                        )
-                            .asLiveData(viewModelScope.coroutineContext)
-                    Log.d("vm", "records: ${records.value}")
-                    mutableRecord.value = records.value
-                }
-            }
+
+        if (!startDate.isNullOrEmpty() && !endDate.isNullOrEmpty()) {
+            return recordRepository.getRecords(startDate.parseDate(), endDate.parseDate())
+                .asLiveData(viewModelScope.coroutineContext)
         }
-        return mutableRecord
+
+        return null
     }
-
-
 }
