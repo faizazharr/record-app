@@ -1,5 +1,6 @@
 package com.example.pos.util
 
+import android.net.Uri
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -32,4 +33,8 @@ fun String.parseFormatDate(
     toFormat: String = DEFAULT_DATE_FORMAT
 ): String {
     return this.parseDate(fromFormat).formatDate(toFormat)
+}
+
+fun String.toUri(): Uri {
+    return Uri.parse(this)
 }

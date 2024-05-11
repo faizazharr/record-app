@@ -28,7 +28,8 @@ class InputUangMasukViewModel @Inject constructor(
         date: String,
         total: String,
         note: String,
-        type: String
+        type: String,
+        imageUri: String
     ) {
         mutableRecord.value = Record(
             from = from,
@@ -36,7 +37,8 @@ class InputUangMasukViewModel @Inject constructor(
             date = date.parseDate(),
             total = total,
             note = note,
-            type = type
+            type = type,
+            imageUri = imageUri
         )
         if (validationForm()) {
             Log.v("Test", "validate: True")
