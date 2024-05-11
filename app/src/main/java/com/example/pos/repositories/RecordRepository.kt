@@ -1,6 +1,5 @@
 package com.example.pos.repositories
 
-import android.util.Log
 import androidx.annotation.WorkerThread
 import com.example.pos.data.model.local.Record
 import com.example.pos.db.RecordsDao
@@ -24,10 +23,8 @@ class RecordRepository @Inject constructor(
 
     @WorkerThread
     fun getRecords(from: Long, to: Long) = flow {
-        Log.d("repo", "getRecord()")
         val data = recordsDao.getListRecord(from, to)
 //        val data = recordsDao.getAllListRecord()
-        Log.d("repo", "Data: $data")
         emit(data)
     }.flowOn(Dispatchers.IO)
 
