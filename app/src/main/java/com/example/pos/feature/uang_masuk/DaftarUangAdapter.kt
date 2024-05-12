@@ -44,15 +44,17 @@ class DaftarUangAdapter(
                 false
             )
             childBinding.apply {
-                tvInfo.text =
+                tvInfo?.text =
                     itemView.context.getString(R.string.text_from_to, record.from, record.to)
+                tvFrom?.text = record.from
+                tvTo?.text = record.to
                 tvNotes.text = record.note
                 tvDate.text = record.date?.formatDate(FORMAT_DATE)
                 tvAmount.text = record.total!!.toLong().toRpFormat()
-                btnEdit.setOnClickListener {
+                btnEdit?.setOnClickListener {
                     listener.invoke(record, true)
                 }
-                btnDelete.setOnClickListener {
+                btnDelete?.setOnClickListener {
                     listener.invoke(record, false)
                 }
             }
