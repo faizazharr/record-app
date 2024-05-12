@@ -174,7 +174,6 @@ class InputUangMasukFragment : Fragment() {
         ) {
             val data = result.data
             Timber.tag("camera").d("data ${data?.data}")
-            // do your operation from here....
             if (data != null && data.data != null
             ) {
                 val selectedImageUri = data.data
