@@ -7,6 +7,7 @@ import com.example.pos.R
 import com.example.pos.data.model.local.Record
 import com.example.pos.databinding.ItemRvUangMasukBinding
 import com.example.pos.util.formatDate
+import com.example.pos.util.toRpFormat
 
 class DaftarUangAdapter(
     private var records: List<Record>?,
@@ -22,7 +23,7 @@ class DaftarUangAdapter(
                     itemView.context.getString(R.string.text_from_to, record.from, record.to)
                 tvNotes.text = record.note
                 tvDate.text = record.date?.formatDate(FORMAT_DATE)
-                tvAmount.text = record.total
+                tvAmount.text = record.total!!.toLong().toRpFormat()
                 btnEdit.setOnClickListener {
                     listener.invoke(record, true)
                 }
