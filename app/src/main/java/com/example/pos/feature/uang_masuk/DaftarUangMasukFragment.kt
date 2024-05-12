@@ -1,7 +1,6 @@
 package com.example.pos.feature.uang_masuk
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,12 +26,12 @@ class DaftarUangMasukFragment : Fragment() {
     private val viewModel: DaftarUangMasukViewModel by activityViewModels()
     private lateinit var binding: FragmentDaftarUangMasukBinding
     private lateinit var adapter: DaftarUangAdapter
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDaftarUangMasukBinding.inflate(inflater, container, false)
+
         adapter = DaftarUangAdapter(null) { record, isEdit ->
             if (isEdit) {
                 navigateEditUang(record.id)
@@ -128,5 +127,6 @@ class DaftarUangMasukFragment : Fragment() {
             bundle = bundle
         )
     }
+
 
 }
