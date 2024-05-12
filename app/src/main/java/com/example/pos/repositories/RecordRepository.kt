@@ -3,6 +3,8 @@ package com.example.pos.repositories
 import androidx.annotation.WorkerThread
 import com.example.pos.data.model.local.Record
 import com.example.pos.db.RecordsDao
+import com.example.pos.util.DEFAULT_DATE_FORMAT
+import com.example.pos.util.formatDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -25,6 +27,15 @@ class RecordRepository @Inject constructor(
     fun getRecords(from: Long, to: Long) = flow {
         val data = recordsDao.getListRecord(from, to)
         emit(data)
+    }.flowOn(Dispatchers.IO)
+
+    @WorkerThread
+    fun getRecordsGroupByDate(from: Long, to: Long) = flow {
+        val data = recordsDao.getListRecord(from, to)
+        val dataByGroup = data?.groupBy { it.date!!.formatDate(DEFAULT_DATE_FORMAT) }
+        emit(dataByGroup)
+    }.onStart {
+        emit(null)
     }.flowOn(Dispatchers.IO)
 
     @WorkerThread

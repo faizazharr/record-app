@@ -34,14 +34,14 @@ class DaftarUangMasukViewModel @Inject constructor(
         this.endDate.value = endDate
     }
 
-    fun loadRecords(): LiveData<List<Record>?>? {
+    fun loadRecords(): LiveData<Map<String,List<Record>?>?>? {
         val startDate = startDate.value
         val endDate = endDate.value
 
         if (!startDate.isNullOrEmpty() && !endDate.isNullOrEmpty()) {
             val millisStart = convertStart(startDate.parseDate())
             val millisEnd = convertEnd(endDate.parseDate())
-            return recordRepository.getRecords(millisStart, millisEnd)
+            return recordRepository.getRecordsGroupByDate(millisStart, millisEnd)
                 .asLiveData(viewModelScope.coroutineContext)
         }
 
