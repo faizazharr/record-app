@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.pos.databinding.DialogSelectResourceBinding
 import com.example.pos.databinding.FragmentInputUangMasukBinding
 import com.example.pos.util.currentDate
@@ -88,6 +89,7 @@ class InputUangMasukFragment : Fragment() {
                     date = currentDate(),
                     imageUri = imageUri
                 )
+                findNavController().navigateUp()
             }
             cvImage.setOnClickListener {
                 if (imageUri.isEmpty())

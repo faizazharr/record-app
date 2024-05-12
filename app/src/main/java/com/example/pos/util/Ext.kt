@@ -38,3 +38,7 @@ fun String.parseFormatDate(
 fun String.toUri(): Uri {
     return Uri.parse(this)
 }
+
+fun Long.toRpFormat(): String {
+    return "Rp${String.format(Locale("in","ID"), "%,d", this)}"
+}

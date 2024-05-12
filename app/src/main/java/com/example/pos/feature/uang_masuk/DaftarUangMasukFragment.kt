@@ -44,7 +44,8 @@ class DaftarUangMasukFragment : Fragment() {
         return binding.root
     }
 
-    init {
+    override fun onResume() {
+        super.onResume()
         loadAllRecords()
     }
 
@@ -81,14 +82,14 @@ class DaftarUangMasukFragment : Fragment() {
         }
     }
 
-    private fun initRecords(records: List<Record>?) {
+    private fun initRecords(groupRecords: Map<String,List<Record>?>?) {
         binding.apply {
-            if (!records.isNullOrEmpty()) {
+            if (!groupRecords.isNullOrEmpty()) {
                 tvEmptyRecord.visibility = View.GONE
             } else {
                 tvEmptyRecord.visibility = View.VISIBLE
             }
-            adapter.setRecords(records)
+            adapter.setRecords(groupRecords)
         }
     }
 

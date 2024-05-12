@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.pos.data.model.local.Record
 import com.example.pos.databinding.DialogSelectResourceBinding
 import com.example.pos.databinding.FragmentEditUangMasukBinding
@@ -107,6 +108,7 @@ class EditUangMasukFragment : Fragment() {
                     date = currentDate,
                     imageUri = imageUri
                 )
+                findNavController().navigateUp()
             }
             cvImage.setOnClickListener {
                 if (imageUri.isEmpty())
